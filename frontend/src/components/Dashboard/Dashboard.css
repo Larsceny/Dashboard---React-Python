@@ -1,0 +1,629 @@
+.dashboard-container {
+  padding: 30px;
+  min-height: 100vh;
+  background: var(--bg-color);
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+/* Grid Layout */
+.dashboard-grid {
+  position: relative;
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top, width, height;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.react-grid-item > div {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: var(--primary-color);
+  opacity: 0.2;
+  border-radius: 12px;
+}
+
+/* Resize Handles */
+.react-resizable-handle {
+  position: absolute;
+  z-index: 100;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+}
+
+/* Corner handles */
+.react-resizable-handle-se {
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  cursor: se-resize;
+}
+
+.react-resizable-handle-sw {
+  bottom: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  cursor: sw-resize;
+}
+
+.react-resizable-handle-ne {
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  cursor: ne-resize;
+}
+
+.react-resizable-handle-nw {
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  cursor: nw-resize;
+}
+
+/* Side handles - horizontal resize */
+.react-resizable-handle-e {
+  right: -5px;
+  top: 0;
+  width: 10px;
+  height: 100%;
+  cursor: ew-resize;
+  background: transparent;
+  border-right: 3px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.react-resizable-handle-e:hover {
+  border-right-color: var(--primary-color);
+}
+
+.react-resizable-handle-w {
+  left: -5px;
+  top: 0;
+  width: 10px;
+  height: 100%;
+  cursor: ew-resize;
+  background: transparent;
+  border-left: 3px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.react-resizable-handle-w:hover {
+  border-left-color: var(--primary-color);
+}
+
+/* Visual indicator for corner handles */
+.react-resizable-handle-se::after,
+.react-resizable-handle-sw::after,
+.react-resizable-handle-ne::after,
+.react-resizable-handle-nw::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--text-secondary);
+  border-bottom: 2px solid var(--text-secondary);
+}
+
+.react-resizable-handle-se::after {
+  right: 3px;
+  bottom: 3px;
+}
+
+.react-resizable-handle-sw::after {
+  left: 3px;
+  bottom: 3px;
+  transform: rotate(90deg);
+}
+
+.react-resizable-handle-ne::after {
+  right: 3px;
+  top: 3px;
+  transform: rotate(-90deg);
+}
+
+.react-resizable-handle-nw::after {
+  left: 3px;
+  top: 3px;
+  transform: rotate(180deg);
+}
+
+/* Make handles more visible on hover */
+.react-grid-item:hover .react-resizable-handle-se::after,
+.react-grid-item:hover .react-resizable-handle-sw::after,
+.react-grid-item:hover .react-resizable-handle-ne::after,
+.react-grid-item:hover .react-resizable-handle-nw::after {
+  border-color: var(--primary-color);
+}
+
+/* Widget Cards */
+.widget-card {
+  height: 100%;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.widget-title {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary-color);
+  cursor: grab;
+  user-select: none;
+}
+
+.widget-title:active {
+  cursor: grabbing;
+}
+
+.widget-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Tasks Widget */
+.tasks-summary {
+  margin-bottom: 20px;
+}
+
+.task-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  background: var(--primary-bg);
+  border-radius: 8px;
+}
+
+.count-number {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.count-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 5px;
+}
+
+.tasks-section {
+  margin-bottom: 20px;
+}
+
+.tasks-section h4 {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 10px 0;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--overlay-light);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.task-item:hover {
+  background: var(--overlay-medium);
+}
+
+.task-checkbox {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.task-title {
+  flex: 1;
+  color: var(--secondary-color);
+  font-size: 0.9rem;
+}
+
+.task-time,
+.task-date {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+/* Calendar Widget - Ultra Compact */
+.calendar-widget-title {
+  font-size: 0.95rem !important;
+  margin: 0 0 8px 0 !important;
+  padding-bottom: 6px !important;
+  border-bottom: 1px solid var(--primary-color) !important;
+}
+
+.calendar-widget-content {
+  padding: 0 !important;
+  overflow-y: auto !important;
+  flex: 1 !important;
+}
+
+.calendar-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0 0 6px 0;
+  padding: 0 8px;
+  line-height: 1;
+}
+
+.events-count {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  padding: 4px 8px 8px 8px;
+  font-weight: 700;
+  text-align: center;
+  background: var(--secondary-bg);
+  border-radius: 4px;
+  margin: 0 8px 8px 8px;
+}
+
+.events-list {
+  padding: 0 8px 2px 8px;
+}
+
+.event-item {
+  display: block;
+  padding: 4px 6px;
+  margin-bottom: 4px;
+  background: var(--overlay-light);
+  border-radius: 2px;
+  border-left: 2px solid var(--primary-color);
+  line-height: 1.5;
+  min-height: 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-time {
+  display: inline;
+  font-size: 0.65rem;
+  color: var(--secondary-color);
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.event-item .event-title {
+  display: inline;
+  color: var(--secondary-color);
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+.no-events {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.no-events-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.no-events p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Projects Widget */
+.project-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+.next-step-section h4 {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 10px 0;
+}
+
+.next-step-text {
+  padding: 15px;
+  background: var(--secondary-bg);
+  border-left: 3px solid var(--secondary-color);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Weather Widget */
+.current-weather {
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.weather-icon {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+.weather-temp {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+}
+
+.weather-condition {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+
+.weather-range {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.forecast-section h4 {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 15px 0;
+}
+
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.forecast-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 5px;
+  background: var(--overlay-light);
+  border-radius: 6px;
+}
+
+.forecast-day {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.forecast-icon {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+}
+
+.forecast-temps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.forecast-high {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.forecast-low {
+  color: var(--text-secondary);
+}
+
+/* Health & Education Widgets */
+.counter-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  margin-bottom: 15px;
+}
+
+.counter-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  line-height: 1;
+}
+
+.counter-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 5px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--overlay-light);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--secondary-color);
+  transition: width 0.3s ease;
+}
+
+.task-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background: var(--overlay-light);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.check-icon {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.check-icon.done {
+  color: var(--secondary-color);
+}
+
+.checklist-item .done-text {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+.checklist-item span:not(.check-icon) {
+  color: var(--text-secondary);
+}
+
+/* Loading & Error States */
+.loading,
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.error {
+  color: var(--danger-color);
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+  .forecast-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .forecast-item:nth-child(n+5) {
+    display: none;
+  }
+}
+
+@media (max-width: 1200px) {
+  .dashboard-container {
+    padding: 20px;
+  }
+
+  .forecast-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .forecast-item:nth-child(n+4) {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .widget-card {
+    padding: 15px;
+  }
+
+  .widget-title {
+    font-size: 1rem;
+  }
+
+  .count-number {
+    font-size: 2rem;
+  }
+
+  .weather-temp {
+    font-size: 2rem;
+  }
+
+  .forecast-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+
+  .forecast-item {
+    padding: 8px 3px;
+  }
+}
+
+/* Animations for urgent/overdue items */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--danger-bg);
+  }
+  50% {
+    box-shadow: 0 0 15px var(--danger-color);
+  }
+}
+
+.pulse-animation {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.glow-animation {
+  animation: glow 2s ease-in-out infinite;
+}

@@ -1,0 +1,17 @@
+Flask==3.0.0
+Flask-CORS==4.0.0
+SQLAlchemy==2.0.23
+Flask-SQLAlchemy==3.1.1
+python-dotenv==1.0.0
+cryptography==41.0.7
+requests==2.31.0
+pandas==2.1.4
+google-api-python-client==2.108.0
+google-auth-oauthlib==1.2.0
+google-auth-httplib2==0.2.0
+marshmallow==3.20.1
+pytest==7.4.3
+
+# Note: pysqlcipher3 removed temporarily due to Windows build issues
+# Will add encryption later when needed for medical data (Phase 5)
+# For now using regular SQLite

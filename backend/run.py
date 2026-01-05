@@ -15,11 +15,27 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 24 hours in seconds
 
 # Enable CORS for Electron app
-CORS(app, origins=['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'], supports_credentials=True)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
+        "supports_credentials": True
+    }
+})
+
+# Initialize database
+from app.database import init_db, shutdown_session
+init_db()  # Create tables on startup
+
+# Register database session cleanup
+@app.teardown_appcontext
+def cleanup(exception=None):
+    shutdown_session(exception)
 
 # Register blueprints
 from app.routes.youtube import youtube_bp
-app.register_blueprint(youtube_bp)
+from app.routes.tasks import tasks_bp
+app.register_blueprint(youtube_bp, url_prefix='/api/youtube')
+app.register_blueprint(tasks_bp)
 
 @app.route('/')
 def index():

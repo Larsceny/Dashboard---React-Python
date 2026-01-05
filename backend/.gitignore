@@ -1,0 +1,16 @@
+# Database files
+data/database/*.db
+data/database/*.db-journal
+data/backups/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Environment
+.env

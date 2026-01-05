@@ -1,14 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import SubTabs from '../Common/SubTabs'
 import './ActivitiesTab.css'
-import { mockTodayTasks as mockDailyTasks, mockWeeklyTasks } from '../../data/mockTasks'
 
-// Monthly tasks (can be expanded later)
-const mockMonthlyTasks = [
-  { id: 101, title: 'Q1 Planning', status: 'pending', dueDate: '2026-01-31' },
-  { id: 102, title: 'Annual review', status: 'in-progress', dueDate: '2026-01-15' },
-  { id: 103, title: 'Budget planning', status: 'pending', dueDate: '2026-01-20' },
-]
+const API_URL = 'http://localhost:5000'
 
 const mockCompletionData = {
   totalTasks: 45,
@@ -33,6 +27,11 @@ function ActivitiesTab() {
   const [isRecurring, setIsRecurring] = useState(false)
   const [selectedDay, setSelectedDay] = useState('Sunday')
   const [monthlyOption, setMonthlyOption] = useState('end-of-month')
+  const [dailyTasks, setDailyTasks] = useState([])
+  const [weeklyTasks, setWeeklyTasks] = useState([])
+  const [monthlyTasks, setMonthlyTasks] = useState([])
+  const [newTaskTitle, setNewTaskTitle] = useState('')
+  const [newTaskDescription, setNewTaskDescription] = useState('')
 
   const subTabs = [
     { id: 'daily', label: 'Daily', icon: '📅' },
@@ -41,14 +40,86 @@ function ActivitiesTab() {
     { id: 'data', label: 'Data', icon: '📊' },
   ]
 
+  // Fetch tasks from API on component mount
+  useEffect(() => {
+    fetchTasks()
+  }, [])
+
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/tasks`)
+      const allTasks = await response.json()
+
+      // Separate by category
+      setDailyTasks(allTasks.filter(t => t.category === 'Daily'))
+      setWeeklyTasks(allTasks.filter(t => t.category === 'Weekly'))
+      setMonthlyTasks(allTasks.filter(t => t.category === 'Monthly'))
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error)
+    }
+  }
+
+  const handleCompleteTask = async (taskId) => {
+    try {
+      await fetch(`${API_URL}/api/tasks/${taskId}/complete`, {
+        method: 'PATCH'
+      })
+      fetchTasks() // Refresh tasks
+    } catch (error) {
+      console.error('Failed to complete task:', error)
+    }
+  }
+
+  const handleAddTask = async (e) => {
+    e.preventDefault()
+
+    if (!newTaskTitle.trim()) return
+
+    try {
+      const category = activeSubTab.charAt(0).toUpperCase() + activeSubTab.slice(1)
+      const taskData = {
+        title: newTaskTitle,
+        category: category,
+        notes: newTaskDescription || null,
+        date: new Date().toISOString().split('T')[0], // Today's date
+        priority: 1
+      }
+
+      await fetch(`${API_URL}/api/tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(taskData)
+      })
+
+      // Reset form and refresh tasks
+      setNewTaskTitle('')
+      setNewTaskDescription('')
+      setShowAddForm(false)
+      fetchTasks()
+    } catch (error) {
+      console.error('Failed to add task:', error)
+    }
+  }
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await fetch(`${API_URL}/api/tasks/${taskId}`, {
+        method: 'DELETE'
+      })
+      fetchTasks() // Refresh tasks
+    } catch (error) {
+      console.error('Failed to delete task:', error)
+    }
+  }
+
   const getCurrentTasks = () => {
     switch (activeSubTab) {
       case 'daily':
-        return mockDailyTasks
+        return dailyTasks
       case 'weekly':
-        return mockWeeklyTasks
+        return weeklyTasks
       case 'monthly':
-        return mockMonthlyTasks
+        return monthlyTasks
       default:
         return []
     }
@@ -72,14 +143,27 @@ function ActivitiesTab() {
       {showAddForm && activeSubTab !== 'data' && (
         <div className="add-activity-form card">
           <h3>New Task</h3>
-          <form>
+          <form onSubmit={handleAddTask}>
             <div className="form-group">
               <label>Task Title</label>
-              <input type="text" className="form-control" placeholder="What needs to be done?" />
+              <input
+                type="text"
+                className="form-control"
+                placeholder="What needs to be done?"
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                required
+              />
             </div>
             <div className="form-group">
               <label>Description</label>
-              <textarea className="form-control" rows="3" placeholder="Task details..."></textarea>
+              <textarea
+                className="form-control"
+                rows="3"
+                placeholder="Task details..."
+                value={newTaskDescription}
+                onChange={(e) => setNewTaskDescription(e.target.value)}
+              ></textarea>
             </div>
 
             {/* Recurring task options */}
@@ -150,7 +234,7 @@ function ActivitiesTab() {
                 <input
                   type="checkbox"
                   checked={task.status === 'completed'}
-                  onChange={() => {}}
+                  onChange={() => task.status !== 'completed' && handleCompleteTask(task.id)}
                 />
               </div>
               <div className="task-content">
@@ -159,7 +243,8 @@ function ActivitiesTab() {
                 </div>
                 <div className="task-meta">
                   {task.time && <span className="task-time">⏰ {task.time}</span>}
-                  {task.dueDate && <span className="task-due">📅 Due: {task.dueDate}</span>}
+                  {task.date && <span className="task-due">📅 {task.date}</span>}
+                  {task.notes && <span className="task-notes">📝 {task.notes}</span>}
                   <span className={`task-status status-${task.status}`}>
                     {task.status === 'completed' && '✓ Completed'}
                     {task.status === 'pending' && '○ Pending'}
@@ -169,7 +254,7 @@ function ActivitiesTab() {
               </div>
               <div className="task-actions">
                 <button className="btn-icon" title="Edit">✏️</button>
-                <button className="btn-icon" title="Delete">🗑️</button>
+                <button className="btn-icon" title="Delete" onClick={() => handleDeleteTask(task.id)}>🗑️</button>
               </div>
             </div>
           ))}

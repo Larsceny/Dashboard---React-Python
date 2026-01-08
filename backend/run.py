@@ -34,8 +34,10 @@ def cleanup(exception=None):
 # Register blueprints
 from app.routes.youtube import youtube_bp
 from app.routes.tasks import tasks_bp
+from app.routes.projects import projects_bp
 app.register_blueprint(youtube_bp, url_prefix='/api/youtube')
 app.register_blueprint(tasks_bp)
+app.register_blueprint(projects_bp)
 
 @app.route('/')
 def index():

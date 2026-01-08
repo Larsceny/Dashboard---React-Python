@@ -32,7 +32,7 @@ def init_db():
     # Uncomment each line as you create the corresponding model file
 
     import app.models.tasks
-    # import app.models.projects
+    import app.models.projects
     # import app.models.education
     # import app.models.calendar
     # import app.models.water

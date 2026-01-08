@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
-from datetime import datetime
+from datetime import datetime, timedelta
+from sqlalchemy import func
 from app.database import db_session
 from app.models.tasks import Task
 
@@ -141,4 +142,53 @@ def complete_task(task_id):
 
     except Exception as e:
         db_session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@tasks_bp.route('/api/tasks/stats', methods=['GET'])
+def get_task_stats():
+    """Get task statistics for the Data sub-tab"""
+    try:
+        # Get all tasks
+        all_tasks = db_session.query(Task).all()
+
+        # Calculate counts
+        total_tasks = len(all_tasks)
+        completed = len([t for t in all_tasks if t.status == 'completed'])
+        pending = len([t for t in all_tasks if t.status == 'pending'])
+        in_progress = len([t for t in all_tasks if t.status == 'in-progress'])
+
+        # Calculate completion rate
+        completion_rate = round((completed / total_tasks * 100) if total_tasks > 0 else 0)
+
+        # Calculate weekly completion (last 7 days)
+        today = datetime.now().date()
+        weekly_completion = []
+        day_names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+        for i in range(7):
+            day_date = today - timedelta(days=6-i)
+            day_name = day_names[day_date.weekday()]
+            if day_date.weekday() == 6:  # Sunday is 6 in Python, but we want it first
+                day_name = 'Sun'
+
+            completed_count = len([
+                t for t in all_tasks
+                if t.completed_at and t.completed_at.date() == day_date
+            ])
+
+            weekly_completion.append({
+                'day': day_name,
+                'completed': completed_count
+            })
+
+        return jsonify({
+            'totalTasks': total_tasks,
+            'completed': completed,
+            'pending': pending,
+            'inProgress': in_progress,
+            'completionRate': completion_rate,
+            'weeklyCompletion': weekly_completion
+        }), 200
+
+    except Exception as e:
         return jsonify({'error': str(e)}), 500

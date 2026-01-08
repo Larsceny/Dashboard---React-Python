@@ -4,23 +4,6 @@ import './ActivitiesTab.css'
 
 const API_URL = 'http://localhost:5000'
 
-const mockCompletionData = {
-  totalTasks: 45,
-  completed: 32,
-  pending: 10,
-  inProgress: 3,
-  completionRate: 71,
-  weeklyCompletion: [
-    { day: 'Sun', completed: 5 },
-    { day: 'Mon', completed: 7 },
-    { day: 'Tue', completed: 4 },
-    { day: 'Wed', completed: 6 },
-    { day: 'Thu', completed: 5 },
-    { day: 'Fri', completed: 3 },
-    { day: 'Sat', completed: 2 },
-  ]
-}
-
 function ActivitiesTab() {
   const [activeSubTab, setActiveSubTab] = useState('daily')
   const [showAddForm, setShowAddForm] = useState(false)
@@ -32,6 +15,14 @@ function ActivitiesTab() {
   const [monthlyTasks, setMonthlyTasks] = useState([])
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [newTaskDescription, setNewTaskDescription] = useState('')
+  const [statsData, setStatsData] = useState({
+    totalTasks: 0,
+    completed: 0,
+    pending: 0,
+    inProgress: 0,
+    completionRate: 0,
+    weeklyCompletion: []
+  })
 
   const subTabs = [
     { id: 'daily', label: 'Daily', icon: '📅' },
@@ -40,9 +31,10 @@ function ActivitiesTab() {
     { id: 'data', label: 'Data', icon: '📊' },
   ]
 
-  // Fetch tasks from API on component mount
+  // Fetch tasks and stats from API on component mount
   useEffect(() => {
     fetchTasks()
+    fetchStats()
   }, [])
 
   const fetchTasks = async () => {
@@ -59,12 +51,23 @@ function ActivitiesTab() {
     }
   }
 
+  const fetchStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/tasks/stats`)
+      const data = await response.json()
+      setStatsData(data)
+    } catch (error) {
+      console.error('Failed to fetch stats:', error)
+    }
+  }
+
   const handleCompleteTask = async (taskId) => {
     try {
       await fetch(`${API_URL}/api/tasks/${taskId}/complete`, {
         method: 'PATCH'
       })
       fetchTasks() // Refresh tasks
+      fetchStats() // Refresh stats
     } catch (error) {
       console.error('Failed to complete task:', error)
     }
@@ -96,6 +99,7 @@ function ActivitiesTab() {
       setNewTaskDescription('')
       setShowAddForm(false)
       fetchTasks()
+      fetchStats() // Refresh stats
     } catch (error) {
       console.error('Failed to add task:', error)
     }
@@ -107,6 +111,7 @@ function ActivitiesTab() {
         method: 'DELETE'
       })
       fetchTasks() // Refresh tasks
+      fetchStats() // Refresh stats
     } catch (error) {
       console.error('Failed to delete task:', error)
     }
@@ -264,25 +269,25 @@ function ActivitiesTab() {
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-info">
-                <div className="stat-value">{mockCompletionData.totalTasks}</div>
+                <div className="stat-value">{statsData.totalTasks}</div>
                 <div className="stat-label">Total Tasks</div>
               </div>
             </div>
             <div className="stat-card">
               <div className="stat-info">
-                <div className="stat-value">{mockCompletionData.completed}</div>
+                <div className="stat-value">{statsData.completed}</div>
                 <div className="stat-label">Completed</div>
               </div>
             </div>
             <div className="stat-card">
               <div className="stat-info">
-                <div className="stat-value">{mockCompletionData.inProgress}</div>
+                <div className="stat-value">{statsData.inProgress}</div>
                 <div className="stat-label">In Progress</div>
               </div>
             </div>
             <div className="stat-card">
               <div className="stat-info">
-                <div className="stat-value">{mockCompletionData.pending}</div>
+                <div className="stat-value">{statsData.pending}</div>
                 <div className="stat-label">Pending</div>
               </div>
             </div>
@@ -292,12 +297,12 @@ function ActivitiesTab() {
             <h3>Completion Rate</h3>
             <div className="completion-rate-display">
               <div className="rate-circle">
-                <span className="rate-value">{mockCompletionData.completionRate}%</span>
+                <span className="rate-value">{statsData.completionRate}%</span>
               </div>
               <div className="rate-bar">
                 <div
                   className="rate-fill"
-                  style={{ width: `${mockCompletionData.completionRate}%` }}
+                  style={{ width: `${statsData.completionRate}%` }}
                 ></div>
               </div>
             </div>
@@ -306,7 +311,7 @@ function ActivitiesTab() {
           <div className="weekly-chart card">
             <h3>Weekly Completion</h3>
             <div className="chart-bars">
-              {mockCompletionData.weeklyCompletion.map((day, index) => (
+              {statsData.weeklyCompletion.map((day, index) => (
                 <div key={index} className="bar-item">
                   <div className="bar-container">
                     <div
